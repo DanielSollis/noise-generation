@@ -9,8 +9,7 @@ import (
 
 func generateSin(duration, sampleRate, frequency int) []float64 {
 	sampleNumber := duration * sampleRate
-	tau := math.Pi * 2
-	angle := tau / float64(sampleRate)
+	angle := (2 * math.Pi) / float64(sampleRate)
 
 	var sinWave []float64
 	for i := 0; i < sampleNumber; i++ {
@@ -28,7 +27,10 @@ func writeSin(fileName string, sinWave []float64) (err error) {
 	}
 
 	for i := 0; i < len(sinWave); i++ {
+		// PutUint32 requires 8 bytes, using a byte
+		// slice would cause an index out of range
 		var buffer [8]byte
+
 		sample := float32(sinWave[i])
 		binaryFloat := math.Float32bits(sample)
 		binary.LittleEndian.PutUint32(buffer[:], binaryFloat)
@@ -44,7 +46,7 @@ func writeSin(fileName string, sinWave []float64) (err error) {
 func main() {
 	duration := 2       // in seconds
 	sampleRate := 44100 // CD quality sample rate
-	frequency := 329    // A sub 4
+	frequency := 440    // A sub 4
 
 	sinWave := generateSin(duration, sampleRate, frequency)
 
